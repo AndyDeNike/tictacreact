@@ -33,14 +33,17 @@ class Board extends React.Component {
         };
     }
 
-    // handleClick(i) {
-    //     const squares = this.state.squares.slice();
-    //     squares[i] = this.state.xIsNext ? 'X' : '0'
-    //     this.setState({
-    //         squares: squares,
-    //         xIsNext: !this.state.xIsNext,
-    //     });
-    // }
+    handleClick(i) {
+        const squares = this.state.squares.slice();
+        if (calculateWinner(squares) || squares[i]) {
+            return;
+        }
+        squares[i] = this.state.xIsNext ? 'X' : '0'
+        this.setState({
+            squares: squares,
+            xIsNext: !this.state.xIsNext,
+        });
+    }
 
     renderSquare(i) {
         return (
@@ -85,18 +88,6 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
-    handleClick(i) {
-        const squares = this.state.squares.slice();
-        if (calculateWinner(squares) || squares[i]) {
-            return;
-        }
-        squares[i] = this.state.xIsNext ? 'X' : '0'
-        this.setState({
-            squares: squares,
-            xIsNext: !this.state.xIsNext,
-        });
-    }
-
     render() {
         return (
         <div className="game">

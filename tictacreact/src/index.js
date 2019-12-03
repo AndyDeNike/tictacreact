@@ -25,48 +25,47 @@ class Board extends React.Component {
     // constructor of a subclass. All React component classes that have a constructor 
     // should start it with a super(props) call.
     //state allows individual components to remember variables 
-    constructor(props){
-        super(props);
-        this.state = {
-            squares: Array(9).fill(null),
-            xIsNext: true,
-        };
-    }
+    // constructor(props){
+    //     super(props);
+    //     this.state = {
+    //         squares: Array(9).fill(null),
+    //         xIsNext: true,
+    //     };
+    // }
 
-    handleClick(i) {
-        const squares = this.state.squares.slice();
-        if (calculateWinner(squares) || squares[i]) {
-            return;
-        }
-        squares[i] = this.state.xIsNext ? 'X' : '0'
-        this.setState({
-            squares: squares,
-            xIsNext: !this.state.xIsNext,
-        });
-    }
+    // handleClick(i) {
+    //     const squares = this.state.squares.slice();
+    //     if (calculateWinner(squares) || squares[i]) {
+    //         return;
+    //     }
+    //     squares[i] = this.state.xIsNext ? 'X' : '0'
+    //     this.setState({
+    //         squares: squares,
+    //         xIsNext: !this.state.xIsNext,
+    //     });
+    // }
 
     renderSquare(i) {
         return (
             <Square 
-                value={this.state.squares[i]} //passing value prop to Square
-                onClick={() => this.handleClick(i)} //passing onClick functional prop as well
+                value={this.props.squares[i]} //passing value prop to Square
+                onClick={() => this.props.onClick(i)} //passing onClick functional prop as well
             />
         );
     }
 
     render() {
         // const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-        const winner = calculateWinner(this.state.squares);
-        let status;
-        if (winner) {
-            status = 'Winner: ' + winner;
-        } else {
-            status = 'Next player: ' + (this.state.xIsNext? 'X' : 'O');
-        }
+        // const winner = calculateWinner(this.state.squares);
+        // let status;
+        // if (winner) {
+        //     status = 'Winner: ' + winner;
+        // } else {
+        //     status = 'Next player: ' + (this.state.xIsNext? 'X' : 'O');
+        // }
 
         return (
         <div>
-            <div className="status">{status}</div>
             <div className="board-row">
             {this.renderSquare(0)}
             {this.renderSquare(1)}
@@ -88,14 +87,55 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            history: [{
+                squares: Array(9).fill(null),
+            }], 
+            xIsNext: true,
+        };
+    }
+
+    handleClick(i) {
+        const history = this.state.history;
+        const current = history[history.length - 1];
+        const squares = current.squares.slice();
+        if (calculateWinner(squares) || squares[i]) {
+            return;
+        }
+        squares[i] = this.state.xIsNext ? 'X' : '0'
+        this.setState({
+            history: history.concat([{
+                squares: squares,
+            }]),
+            xIsNext: !this.state.xIsNext,
+        });
+    }
+
     render() {
+        const history = this.state.history;
+        const current = history[history.length - 1];
+        const winner = calculateWinner(current.squares);
+
+        let status;
+        if (winner) {
+            status = 'Winner: ' + winner;
+        } else {
+            status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+        }
+
         return (
         <div className="game">
             <div className="game-board">
-            <Board />
+            <Board 
+                squares={current.squares}
+                onClick={(i) => this.handleClick(i)}
+            />
+
             </div>
             <div className="game-info">
-            <div>{/* status */}</div>
+            <div>{status}</div>
             <ol>{/* TODO */}</ol>
             </div>
         </div>
